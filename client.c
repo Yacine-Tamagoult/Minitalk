@@ -89,9 +89,10 @@ void send(int code,char *str)
 
     i = 0;
 
-
+    usleep(1);
     while(str[i])
     {
+        usleep(1);
         if (str[i] == '1')
         {
             kill(code, SIGUSR1);
@@ -109,7 +110,6 @@ void send(int code,char *str)
 void master(int code,char *str)
 {
     int i;
-    char fin[2];
     int j;
 
     j = 0;

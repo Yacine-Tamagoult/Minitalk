@@ -20,6 +20,7 @@ int ft_strlen(char *str)
 
 char *ft_strcat(char *str, char c)
 {
+    
 	int i;
 	char *new;
 
@@ -42,49 +43,72 @@ char *ft_strcat(char *str, char c)
 }
 
 
-void printstr(char c,int count)
+void printstr(char c)
 {
-{
+
+
 	static char *chaine;
 
 	if(c == 0)
 	{
 		printf("%s\n", chaine);
+        free(chaine);
 		chaine = NULL;
 	}
 	else
 		chaine = ft_strcat(chaine, c);
+
+    
 }
+
+void converter(char *str)
+{
+    static int i;
+    char c;
+   
+    while(str[i])
+    {
+        if(str[i] == '1')
+        {
+            c = c * 2 + 1;
+            i++; 
+        }
+        else if(str[i] == '0')
+        {
+            c = c * 2;
+            i++;
+        }
+    }
+    i = 0;
+    printstr(c);
     
 }
 
 void user1(int ref)
 {
     static int i;
-    static int count;
-    static char c;
+    static char str[8];
 
     if(i < 8)
     {
-        c = c << 1;
-        if(ref == 10)
+        
+        if(ref == SIGUSR1)
         {
-            c = c + 1;
+            str[i] = '1';
             i++;
         }
-        else if(ref == 12)
+        else if(ref == SIGUSR2)
         {
+            str[i] = '0';
             i++;
         }
        
     }
-
     if(i == 8)
         {
+            
             i = 0;
-            count++;        
-            printstr(c,count);
-            c = 0;
+            converter(str);
         }   
 }
 int main()
