@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include "/mnt/nfs/homes/yatamago/Desktop/Minitalk/ft_printf/ft_printf.h"
+
+
 
 
 int controle = 0;
@@ -12,6 +15,7 @@ int ft_strlen(char *str)
 {
     int i;
 
+    i = 0;
     while(str[i])
     {
         i++;
@@ -21,7 +25,6 @@ int ft_strlen(char *str)
 
 char *ft_strcat(char *str, char c)
 {
-    
 	int i;
 	char *new;
 
@@ -43,23 +46,18 @@ char *ft_strcat(char *str, char c)
 	return (new);
 }
 
-
 void printstr(char c)
 {
-
-
 	static char *chaine;
 
 	if(c == 0)
 	{
-		printf("la string est : %s\n", chaine);
+		ft_printf("la string est : %s\n", chaine);
         free(chaine);
 		chaine = NULL;
 	}
 	else
 		chaine = ft_strcat(chaine, c);
-
-    
 }
 
 void converter(char *str)
@@ -82,7 +80,6 @@ void converter(char *str)
     }
     i = 0;
     printstr(c);
-    
 }
 
 void user1(int ref, siginfo_t *siginfo, void *context)
@@ -90,12 +87,9 @@ void user1(int ref, siginfo_t *siginfo, void *context)
     static int i;
     static char str[8];
     pid_client = siginfo->si_pid;
-    
-    //printf("Signal %d reçu du processus %d.\n", ref, pid_client);
-   
+    (void)context;
     if(i < 8)
     {
-        
         if(ref == SIGUSR1)
         {
             str[i] = '1';
@@ -106,14 +100,12 @@ void user1(int ref, siginfo_t *siginfo, void *context)
         {
             str[i] = '0';
             i++;
-        }
-        
+        }  
     }
     if(i == 8)
         {
             i = 0;
             converter(str);
-
         }   
     kill(pid_client,SIGUSR1);
 }
@@ -121,19 +113,16 @@ void user1(int ref, siginfo_t *siginfo, void *context)
 int main()
 {
     
-     struct sigaction sa;
+     struct sigaction sa = {0};
     sa.sa_sigaction = user1;
     sa.sa_flags = SA_SIGINFO;
 
     sigaction(SIGUSR1, &sa, NULL); 
     sigaction(SIGUSR2, &sa, NULL);
-    
-    
-    printf("%d\n", getpid());
-    
+    ft_printf("%d\n", getpid());
     while (1)
     {
-        pause;
+        
     }
     return 0;
 }

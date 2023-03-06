@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include "/mnt/nfs/homes/yatamago/Desktop/Minitalk/ft_printf/ft_printf.h"
 
 int controle = 0;
 
@@ -10,6 +11,8 @@ int ft_strlen(char *str)
     int i;
 
     i = 0;
+    if(!str)
+        return (0);
     while(str[i])
     {
         i++;
@@ -27,6 +30,7 @@ void swap(char *str)
     i = 0;
     j = ft_strlen(str) - 1;
     a = ft_strlen(str) / 2;
+    
     while(i != a)
     {
         k = str[i];
@@ -42,44 +46,31 @@ char *calcul(int c)
     int num;
     int i;
     char *tab;
+   
 
-    tab = malloc(sizeof(char) * 8);
+    tab = malloc(sizeof(char) * 9);
+
     i = 0;
     num = c;
     while(num != 0)
     {
-        
-        tab[i] = num % 2 + '0';
+        tab[i++] = num % 2 + '0';
         num = num / 2;
-        i++;
     }
-
     if(c <= 63)
+        tab[i++] = '0';
+     if(c == 0)
     {
-        tab[i] = '0';
-        i++;
-    }
-    if(c == 0)
-    {
-        tab[i] = '0';
-        i++;
-        tab[i] = '0';
-        i++;
-        tab[i] = '0';
-        i++;
-        tab[i] = '0';
-        i++;
-        tab[i] = '0';
-        i++;
-        tab[i] = '0';
-        i++;
-        tab[i] = '0';
-        i++;
+        while(i < 8)
+        {
+            tab[i] = '0';
+            i++;
+        }
+        tab[i] = '\0';
         return(tab);
     }
     tab[i] = '0';
-    i++;
-    tab[i] = '\0';
+    tab[++i] = '\0';
     swap(tab);
     return (tab);
 }
@@ -96,19 +87,27 @@ void send(int code,char *str)
             if (str[i] == '1')
             {
                 controle = 1;
-                kill(code, SIGUSR1); 
-                pause();  
+                 if(kill(code, SIGUSR1))
+                {
+                    ft_printf("ERROR Mauvais PID.\n");
+                    return;
+                }
+                while(controle);
             }
             else if (str[i] == '0')
             {
                 controle = 1;
-                kill(code, SIGUSR2);
-                pause();
-                
+                if(kill(code, SIGUSR2))
+                {
+                    ft_printf("ERROR Mauvais PID.\n");
+                    return;
+                }
+                while(controle);   
             }
             
              i++;
         }
+        free(str);
 }
 
 void master(int code,char *str)
@@ -121,6 +120,11 @@ void master(int code,char *str)
     //printf("controle est egqle q : %d\n",controle);
     while(str[i])
     {
+        if(code == -1 || code == 0)
+        {
+            ft_printf("ERROR Mauvais PID.\n");
+            return;
+        }
         send(code,calcul(str[i]));
         i++;
     
@@ -146,7 +150,7 @@ void test(int ref)
 int main(int ac, char **av)
 {
 
-     struct sigaction ba;
+     struct sigaction ba = {0};
     ba.sa_handler = test;
     
     sigaction(SIGUSR1, &ba, NULL); 
@@ -160,7 +164,7 @@ int main(int ac, char **av)
     }
     else if(ac < 3)
     {
-        printf("Error");
+        ft_printf("Error");
         return 0;
     }
     return (0);
