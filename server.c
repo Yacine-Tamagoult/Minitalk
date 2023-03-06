@@ -4,7 +4,8 @@
 #include <stdlib.h>
 
 
-
+int controle = 0;
+int pid_client = 0;
 
 
 int ft_strlen(char *str)
@@ -51,7 +52,7 @@ void printstr(char c)
 
 	if(c == 0)
 	{
-		printf("%s\n", chaine);
+		printf("la string est : %s\n", chaine);
         free(chaine);
 		chaine = NULL;
 	}
@@ -84,17 +85,21 @@ void converter(char *str)
     
 }
 
-void user1(int ref)
+void user1(int ref, siginfo_t *siginfo, void *context)
 {
     static int i;
     static char str[8];
-
+    pid_client = siginfo->si_pid;
+    
+    //printf("Signal %d reçu du processus %d.\n", ref, pid_client);
+   
     if(i < 8)
     {
         
         if(ref == SIGUSR1)
         {
             str[i] = '1';
+            
             i++;
         }
         else if(ref == SIGUSR2)
@@ -102,24 +107,33 @@ void user1(int ref)
             str[i] = '0';
             i++;
         }
-       
+        
     }
     if(i == 8)
         {
-            
             i = 0;
             converter(str);
+
         }   
+    kill(pid_client,SIGUSR1);
 }
+
 int main()
 {
-    signal(SIGUSR1, user1);
-    signal(SIGUSR2, user1);
+    
+     struct sigaction sa;
+    sa.sa_sigaction = user1;
+    sa.sa_flags = SA_SIGINFO;
+
+    sigaction(SIGUSR1, &sa, NULL); 
+    sigaction(SIGUSR2, &sa, NULL);
+    
+    
     printf("%d\n", getpid());
     
     while (1)
     {
-        pause();
+        pause;
     }
     return 0;
 }

@@ -2,7 +2,8 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <time.h>
+
+int controle = 0;
 
 int ft_strlen(char *str)
 {
@@ -88,23 +89,26 @@ void send(int code,char *str)
     int i;
 
     i = 0;
-
-    usleep(1);
-    while(str[i])
-    {
-        usleep(1);
-        if (str[i] == '1')
+   
+        while(str[i] && controle == 0)
         {
-            kill(code, SIGUSR1);
-            usleep(1);
+            //printf("controle est egqle q : %d\n",controle);
+            if (str[i] == '1')
+            {
+                controle = 1;
+                kill(code, SIGUSR1); 
+                pause();  
+            }
+            else if (str[i] == '0')
+            {
+                controle = 1;
+                kill(code, SIGUSR2);
+                pause();
+                
+            }
+            
+             i++;
         }
-        else if (str[i] == '0')
-        {
-            kill(code, SIGUSR2);
-            usleep(1);
-        }
-        i++;
-    }
 }
 
 void master(int code,char *str)
@@ -114,7 +118,7 @@ void master(int code,char *str)
 
     j = 0;
     i = 0;
-    
+    //printf("controle est egqle q : %d\n",controle);
     while(str[i])
     {
         send(code,calcul(str[i]));
@@ -127,12 +131,31 @@ void master(int code,char *str)
     }
 }
 
+
+void test(int ref)
+{
+    //printf("azazaazazaz : %d\n",controle);
+    if(ref == SIGUSR1)
+    {
+        controle = 0;
+
+    }
+        
+}
+
 int main(int ac, char **av)
 {
+
+     struct sigaction ba;
+    ba.sa_handler = test;
+    
+    sigaction(SIGUSR1, &ba, NULL); 
+    
+    
     if(ac > 2)
     {
         master(atoi(av[1]),av[2]);
-        //printf("Le message a bien été envoyer :)\n");
+        
         return (0);
     }
     else if(ac < 3)
