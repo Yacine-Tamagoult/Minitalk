@@ -1,171 +1,117 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include "/mnt/nfs/homes/yatamago/Desktop/Minitalk/ft_printf/ft_printf.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: soleil <soleil@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/03/07 19:06:37 by soleil            #+#    #+#             */
+/*   Updated: 2023/03/07 19:44:28 by soleil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-int controle = 0;
+#include "minitalk.h"
 
-int ft_strlen(char *str)
+int	g_controle = 0;
+
+char	*zero(char *tab)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    if(!str)
-        return (0);
-    while(str[i])
-    {
-        i++;
-    }
-    return (i);
+	i = 0;
+	while (i < 8)
+	{
+		tab[i] = '0';
+		i++;
+	}
+	tab[i] = '\0';
+	return (tab);
 }
 
-void swap(char *str)
+char	*calcul(int c)
 {
-    int i;
-    int j;
-    int a;
-    char k;
+	int		num;
+	int		i;
+	char	*tab;
 
-    i = 0;
-    j = ft_strlen(str) - 1;
-    a = ft_strlen(str) / 2;
-    
-    while(i != a)
-    {
-        k = str[i];
-        str[i] = str[j];
-        str[j] = k;
-        i++;
-        j--;
-    }
+	tab = malloc(sizeof(char) * 9);
+	i = 0;
+	num = c;
+	while (num != 0)
+	{
+		tab[i++] = num % 2 + '0';
+		num = num / 2;
+	}
+	if (c <= 63)
+		tab[i++] = '0';
+	if (c == 0)
+	{
+		zero(tab);
+		return (tab);
+	}
+	tab[i] = '0';
+	tab[++i] = '\0';
+	swap (tab);
+	return (tab);
 }
 
-char *calcul(int c)
+void	send(int code, char *str)
 {
-    int num;
-    int i;
-    char *tab;
-   
+	int	i;
 
-    tab = malloc(sizeof(char) * 9);
-
-    i = 0;
-    num = c;
-    while(num != 0)
-    {
-        tab[i++] = num % 2 + '0';
-        num = num / 2;
-    }
-    if(c <= 63)
-        tab[i++] = '0';
-     if(c == 0)
-    {
-        while(i < 8)
-        {
-            tab[i] = '0';
-            i++;
-        }
-        tab[i] = '\0';
-        return(tab);
-    }
-    tab[i] = '0';
-    tab[++i] = '\0';
-    swap(tab);
-    return (tab);
+	i = 0;
+	while (str[i++] && g_controle == 0)
+	{
+		g_controle = 1;
+		if (str[i] == '1')
+		{
+			if (kill(code, SIGUSR1))
+			{
+				ft_printf("ERROR Mauvais PID.\n");
+				return ;
+			}
+			while (g_controle);
+		}
+		else if (str[i] == '0')
+		{
+			if (kill(code, SIGUSR2))
+			{
+				ft_printf("ERROR Mauvais PID.\n");
+				return ;
+			}
+			while (g_controle); 
+		}
+	}
+	free (str);
 }
 
-void send(int code,char *str)
+void	master(int code, char *str)
 {
-    int i;
+	int	i;
+	int	j;
 
-    i = 0;
-   
-        while(str[i] && controle == 0)
-        {
-            //printf("controle est egqle q : %d\n",controle);
-            if (str[i] == '1')
-            {
-                controle = 1;
-                 if(kill(code, SIGUSR1))
-                {
-                    ft_printf("ERROR Mauvais PID.\n");
-                    return;
-                }
-                while(controle);
-            }
-            else if (str[i] == '0')
-            {
-                controle = 1;
-                if(kill(code, SIGUSR2))
-                {
-                    ft_printf("ERROR Mauvais PID.\n");
-                    return;
-                }
-                while(controle);   
-            }
-            
-             i++;
-        }
-        free(str);
+	j = 0;
+	i = 0;
+	while (str[i])
+	{
+		if (code == -1 || code == 0)
+		{
+			ft_printf("ERROR Mauvais PID.\n");
+			return ;
+		}
+		send (code, calcul(str[i]));
+		i++;
+		if (str[i] == '\0')
+		{
+			send (code, calcul(j));
+		}
+	}
 }
 
-void master(int code,char *str)
+void	test(int ref)
 {
-    int i;
-    int j;
-
-    j = 0;
-    i = 0;
-    //printf("controle est egqle q : %d\n",controle);
-    while(str[i])
-    {
-        if(code == -1 || code == 0)
-        {
-            ft_printf("ERROR Mauvais PID.\n");
-            return;
-        }
-        send(code,calcul(str[i]));
-        i++;
-    
-        if(str[i] == '\0')
-        {
-            send(code,calcul(j));
-        }
-    }
-}
-
-
-void test(int ref)
-{
-    //printf("azazaazazaz : %d\n",controle);
-    if(ref == SIGUSR1)
-    {
-        controle = 0;
-
-    }
-        
-}
-
-int main(int ac, char **av)
-{
-
-     struct sigaction ba = {0};
-    ba.sa_handler = test;
-    
-    sigaction(SIGUSR1, &ba, NULL); 
-    
-    
-    if(ac > 2)
-    {
-        master(atoi(av[1]),av[2]);
-        
-        return (0);
-    }
-    else if(ac < 3)
-    {
-        ft_printf("Error");
-        return 0;
-    }
-    return (0);
+	if (ref == SIGUSR1)
+	{
+		g_controle = 0;
+	}
 }
