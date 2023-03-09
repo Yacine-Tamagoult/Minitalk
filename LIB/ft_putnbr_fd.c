@@ -1,29 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_main.c                                      :+:      :+:    :+:   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soleil <soleil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/07 16:33:17 by soleil            #+#    #+#             */
-/*   Updated: 2023/03/09 01:15:03 by soleil           ###   ########.fr       */
+/*   Created: 2022/11/16 19:47:43 by soleil            #+#    #+#             */
+/*   Updated: 2022/11/23 09:43:50 by soleil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "libft.h"
 
-int	main(void)
+void	ft_putnbr_fd(int n, int fd)
 {
-	struct sigaction		sa;
-
-	ft_memset(&sa, 0, sizeof(sa));
-	sa.sa_sigaction = user1;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-	ft_printf("%d\n", getpid());
-	while (1)
+	if (n == -2147483648)
 	{
+		write (fd, "-2147483648", 11);
+		return ;
 	}
-	return (0);
+	else if (n < 0)
+	{
+		ft_putchar_fd('-', fd);
+		n = n * -1;
+	}
+	if (n > 9)
+	{
+		ft_putnbr_fd(n / 10, fd);
+		ft_putnbr_fd(n % 10, fd);
+	}
+	if (n <= 9)
+	{
+		ft_putchar_fd(n + 48, fd);
+	}
 }

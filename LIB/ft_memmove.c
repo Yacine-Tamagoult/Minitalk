@@ -1,29 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_main.c                                      :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soleil <soleil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/07 16:33:17 by soleil            #+#    #+#             */
-/*   Updated: 2023/03/09 01:15:03 by soleil           ###   ########.fr       */
+/*   Created: 2022/11/10 22:42:52 by soleil            #+#    #+#             */
+/*   Updated: 2022/11/23 09:40:24 by soleil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "libft.h"
 
-int	main(void)
+void	*ft_memmove(void *dest, const void *src, size_t n)
 {
-	struct sigaction		sa;
+	long unsigned int	i;
 
-	ft_memset(&sa, 0, sizeof(sa));
-	sa.sa_sigaction = user1;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-	ft_printf("%d\n", getpid());
-	while (1)
+	i = 0;
+	if (!dest && !src)
 	{
+		return (NULL);
 	}
-	return (0);
+	if ((unsigned char *)dest <= (unsigned char *)src)
+	{
+		while (i < n)
+		{
+			((unsigned char *)dest)[i] = ((unsigned char *)src)[i];
+			i++;
+		}
+	}
+	else
+	{
+		while (n > 0)
+		{
+			((unsigned char *)dest)[n - 1] = ((unsigned char *)src)[n - 1];
+			n--;
+		}
+	}
+	return (dest);
 }

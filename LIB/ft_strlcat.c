@@ -1,29 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_main.c                                      :+:      :+:    :+:   */
+/*   ft_strlcat.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soleil <soleil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/07 16:33:17 by soleil            #+#    #+#             */
-/*   Updated: 2023/03/09 01:15:03 by soleil           ###   ########.fr       */
+/*   Created: 2022/11/12 20:35:44 by soleil            #+#    #+#             */
+/*   Updated: 2022/11/23 09:54:13 by soleil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "libft.h"
 
-int	main(void)
+size_t	ft_strlcat(char *dst, const char *src, size_t n)
 {
-	struct sigaction		sa;
+	size_t	i;
+	size_t	j;
+	size_t	k;
 
-	ft_memset(&sa, 0, sizeof(sa));
-	sa.sa_sigaction = user1;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-	ft_printf("%d\n", getpid());
-	while (1)
-	{
+	i = 0;
+	k = ft_strlen(dst);
+	j = ft_strlen(src);
+	if (n <= k)
+		return (j + n);
+	while (i < n - k - 1 && src[i])
+	{	
+		dst[k + i] = src[i];
+		i++;
 	}
-	return (0);
+	dst[k + i] = '\0';
+	return (k + j);
 }

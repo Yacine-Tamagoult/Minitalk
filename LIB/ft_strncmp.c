@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_main.c                                      :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soleil <soleil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/07 16:33:17 by soleil            #+#    #+#             */
-/*   Updated: 2023/03/09 01:15:03 by soleil           ###   ########.fr       */
+/*   Created: 2022/11/12 15:52:00 by soleil            #+#    #+#             */
+/*   Updated: 2022/11/23 09:58:55 by soleil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "libft.h"
 
-int	main(void)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	struct sigaction		sa;
+	long unsigned int	i;
 
-	ft_memset(&sa, 0, sizeof(sa));
-	sa.sa_sigaction = user1;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-	ft_printf("%d\n", getpid());
-	while (1)
+	i = 0;
+	if (n == 0)
 	{
+		return (0);
 	}
-	return (0);
+	while (s1[i] && s2[i] && s1[i] == s2[i] && i < n - 1)
+	{
+		i++;
+	}
+	return (s1[i] - s2[i]);
 }

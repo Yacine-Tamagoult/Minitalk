@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server_main.c                                      :+:      :+:    :+:   */
+/*   ft_strrchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: soleil <soleil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/07 16:33:17 by soleil            #+#    #+#             */
-/*   Updated: 2023/03/09 01:15:03 by soleil           ###   ########.fr       */
+/*   Created: 2022/11/12 14:43:18 by soleil            #+#    #+#             */
+/*   Updated: 2022/11/23 10:01:20 by soleil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "libft.h"
 
-int	main(void)
+char	*ft_strrchr(const char *s, int c)
 {
-	struct sigaction		sa;
+	int		i;
+	char	*ptr;
 
-	ft_memset(&sa, 0, sizeof(sa));
-	sa.sa_sigaction = user1;
-	sa.sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-	ft_printf("%d\n", getpid());
-	while (1)
+	i = ft_strlen(s);
+	while (i >= 0)
 	{
+		if (s[i] == (char)c)
+		{
+			ptr = (char *)&s[i];
+			return (ptr);
+		}
+		i--;
 	}
-	return (0);
+	return (NULL);
 }
